@@ -62,7 +62,38 @@ class homeControllers{
         } catch (error) {
             console.log(error.message)
         }
+    } 
+
+    price_range_product = async(req, res) => { //max ve min fiyat bulan fonksiyon
+        try { 
+            const priceRange = {
+                low : 0,
+                high : 0
+            }
+            const products = await productModel.find({}).limit(9).sort({
+                createdAt : -1 // 1 for asc, -1 for Desc
+            })
+            const latest_product = this.formateProduct(products);
+            const getForPrice = await productModel.find({}).sort({
+                'price' : 1 // fiyat artana göre
+            })
+
+            if(getForPrice.length > 0){
+                priceRange.high = getForPrice[getForPrice.length -1].price
+                priceRange.low = getForPrice[0].price
+            }
+            // console.log(priceRange) 
+            responseReturn(res, 200, {
+                latest_product,
+                priceRange
+            })
+
+
+        } catch (error) {
+            console.log(error.message)
+        }
     }
+
 }
  
 
