@@ -16,6 +16,11 @@ class queryProducts {
         return this
     }
 
+    searchQuery = () => {
+        this.products = this.query.saerchValue ? this.products.filter(p => p.name.toUpperCase().indexOf(this.query.saerchValue.toUpperCase()) > -1 ) : this.products
+        return this
+    }
+
     priceQuery = () => {
         this.products = this.products.filter(p => p.price >= this.query.lowPrice & p.price <= this.query.highPrice )
         return this
