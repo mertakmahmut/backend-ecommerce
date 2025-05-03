@@ -140,6 +140,19 @@ class cartControllers {
         }
     }
 
+    quantity_inc = async(req,res) => {
+        const {cartId} = req.params
+        // console.log(cartId)
+        try {
+            const product = await cartModel.findById(cartId)
+            const {quantity} = product
+            await cartModel.findByIdAndUpdate(cartId, {quantity : quantity + 1})
+            responseReturn(res, 200, {message : "Quantity Updated"})
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
 }
 
 module.exports = new cartControllers()
