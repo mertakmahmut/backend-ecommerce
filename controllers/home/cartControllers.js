@@ -128,6 +128,18 @@ class cartControllers {
         }
     }
 
+    delete_cart_products = async(req, res) => {
+        const {cartId} = req.params
+        // console.log(cartId)
+        try {
+            await cartModel.findByIdAndDelete(cartId)
+            responseReturn(res, 200, {message : "Product Removed Successfully"})
+            
+        } catch (error) {
+            console.log(error.message)   
+        }
+    }
+
 }
 
 module.exports = new cartControllers()
