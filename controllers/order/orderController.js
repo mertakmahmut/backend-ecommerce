@@ -3,6 +3,7 @@ const authOrderModel = require('../../models/authOrderModel')
 const customerOrderModel = require('../../models/customerOrderModel')
 const cartModel = require('../../models/cartModel')
 const { responseReturn } = require('../../utils/response')
+const { mongo: {ObjectId}} = require('mongoose')
 
 class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda tutman veri yönetimini kolaylaştırır.
 
@@ -98,6 +99,36 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
             console.log(error.message)
         }
 
+    }
+
+    get_customer_dashboard_data = async(req, res) => {
+        const { userId } = req.params
+        try {
+            const recentOrders = await customerOrderModel.find({
+                customerId : new ObjectId(userId)
+            }).limit(5)
+            const pendingOrders = await customerOrderModel.find({
+                customerId : new ObjectId(userId),
+                delivery_status : 'pending'
+            }).countDocuments()
+            const cancelledOrders = await customerOrderModel.find({
+                customerId : new ObjectId(userId),
+                delivery_status : 'cancelled'
+            }).countDocuments()
+            const totalOrder = await customerOrderModel.find({
+                customerId : new ObjectId(userId)
+            }).countDocuments()
+
+            responseReturn(res, 200, {
+                recentOrders,
+                pendingOrders,
+                cancelledOrders,
+                totalOrder
+            })
+
+        } catch (error) {
+            console.log(error.message)
+        }
     }
 }
 
