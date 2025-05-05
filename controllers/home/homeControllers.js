@@ -119,6 +119,10 @@ class homeControllers{
         }
     }
 
+    product_details = async(req, res) => {
+        console.log(req.params)
+    }
+
 }
  
 
