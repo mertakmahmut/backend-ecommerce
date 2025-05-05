@@ -186,6 +186,34 @@ class cartControllers {
         }
     }
 
+    get_wishlist_products = async(req, res) => {
+        const {userId} = req.params
+        try {
+            const wishlists = await wishlistModel.find({
+                userId
+            })
+            responseReturn(res, 200, {
+                wishlistCount : wishlists.length,
+                wishlists
+            })
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+    remove_wishlist = async (req, res) => {
+        const {wishlistId} = req.params
+        try {
+            const wishlist = await wishlistModel.findByIdAndDelete(wishlistId)
+            responseReturn(res, 200,{
+                message: 'Wishlist Product Remove',
+                wishlistId
+         })
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
 }
 
 module.exports = new cartControllers()
