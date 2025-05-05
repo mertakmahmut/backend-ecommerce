@@ -130,6 +130,43 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
             console.log(error.message)
         }
     }
+
+    get_orders = async(req, res) => {
+        const {customerId, status} = req.params
+        try {
+            let orders = []
+            if (status != 'all') {
+                orders = await customerOrderModel.find({
+                    customerId : new ObjectId(customerId),
+                    delivery_status : status
+                })
+            } else {
+                orders = await customerOrderModel.find({
+                    customerId : new ObjectId(customerId)
+                })
+            }
+            responseReturn(res, 200, {
+                orders
+            })
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
+    get_order_details = async(req, res) => {
+        const {orderId} = req.params
+        
+        try {
+            const order = await customerOrderModel.findById(orderId)
+            responseReturn(res,200, {
+                order
+            })
+            
+        } catch (error) {
+            console.log(error.message)
+        }
+    }
+
 }
 
 module.exports = new orderController()
