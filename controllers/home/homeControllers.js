@@ -2,6 +2,8 @@ const categoryModel = require('../../models/categoryModel')
 const { responseReturn } = require('../../utils/response')
 const productModel = require('../../models/productModel')
 const queryProducts = require('../../utils/queryProducts')
+const moment = require('moment')
+const reviewModel = require('../../models/reviewModel')
 
 class homeControllers{
 
@@ -161,6 +163,40 @@ class homeControllers{
             console.log(error.message)
         }
     }
+
+    submit_review = async(req, res) => {
+        const {name, productId, review, rating} = req.body
+        try {
+            await reviewModel.create({
+                name,
+                productId,
+                review,
+                rating,
+                date : moment(Date.now()).format('LL')
+            })
+
+            let rate = 0;
+            const reviews = await reviewModel.find({ // hangi üründe geziniyorsak o ürün için tüm değerlendirmeleri çeker.
+                productId
+            })
+            for (let i = 0; i < reviews.length; i++) { // 
+                rate = rate + reviews[i].rating // spesifik ürün için tüm değerlendirmelerin puanını toplar
+            }
+            let productRating = 0
+            if (reviews.length !== 0) {
+                productRating = (rate / reviews.length).toFixed(1) // topladığı puanı kullanıcı değerlendirme sayısına bölerek ortalama rating bulur
+            }
+    
+            await productModel.findByIdAndUpdate(productId,{
+                rating : productRating // Ortalama rating bulunduktan sonra ürün tablosuna gidip değeri güncellememiz gerekir.
+            })
+            responseReturn(res, 201, {
+                message: "Değerlendirmeniz Başarıyla Eklendi"
+            })
+        } catch (error) {
+            console.log(error.message)
+        }
+    } 
 
 }
  
