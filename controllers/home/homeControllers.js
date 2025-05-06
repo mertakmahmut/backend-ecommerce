@@ -120,7 +120,46 @@ class homeControllers{
     }
 
     product_details = async(req, res) => {
-        console.log(req.params)
+        const {slug} = req.params
+        //console.log(slug)
+        try {
+            const product = await productModel.findOne({slug})
+            // console.log(products)
+            const relatedProducts = await productModel.find({ // benzer ürünleri bul
+                $and: [{
+                    _id: {
+                        $ne: product.id // ürün sayfasındaki ana ürün olmasın. (ne = not equal) başka ürünler listelensin
+                    }
+                },
+                {
+                    category: {
+                        $eq: product.category  // ve aynı kategorideki diğer ürünler listelensin
+                    }
+                }
+               ]
+            }).limit(12)
+            const moreProducts = await productModel.find({
+                $and: [{
+                    _id: {
+                        $ne: product.id
+                    }
+                },
+                {
+                    sellerId: {
+                        $eq: product.sellerId
+                    }
+                }
+               ]
+            }).limit(3)
+            responseReturn(res, 200, {
+                product,
+                relatedProducts,
+                moreProducts
+            })
+            
+        } catch (error) {
+            console.log(error.message)
+        }
     }
 
 }
