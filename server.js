@@ -6,10 +6,26 @@ const bodyParser = require('body-parser')
 const cookieParser = require('cookie-parser')
 const { dbConnect } = require('./utils/db')
 
+const socket = require('socket.io')
+const http = require('http')
+const server = http.createServer(app)
+
 app.use(cors({
     origin : ['http://localhost:3000'],
     credentials : true
 }))
+
+const io = socket(server, {
+    cors : {
+        origin : '*',
+        credentials : true
+    }
+})
+
+io.on('connection', (soc) => {
+    console.log('socket server running..')
+})
+
 app.use(bodyParser.json())
 app.use(cookieParser())
 
@@ -25,4 +41,4 @@ app.use('/api', require('./routes/order/orderRoutes'))
 app.get('/', (req,res) => res.send('My backend'))
 const port = process.env.PORT
 dbConnect()
-app.listen(port, ()=> console.log(`Server is running on port ${port}`))
+server.listen(port, ()=> console.log(`Server is running on port ${port}`))

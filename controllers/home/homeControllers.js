@@ -4,6 +4,7 @@ const productModel = require('../../models/productModel')
 const queryProducts = require('../../utils/queryProducts')
 const moment = require('moment')
 const reviewModel = require('../../models/reviewModel')
+const { mongo: {ObjectId}} = require('mongoose')
 
 class homeControllers{
 
@@ -196,7 +197,87 @@ class homeControllers{
         } catch (error) {
             console.log(error.message)
         }
-    } 
+    }
+    
+    get_reviews = async (req, res) => { // Bu yapı sayesinde ürün detay sayfasında hem kullanıcı yorumlarını hem de yıldız puanı dağılımını gösterebilirsin.
+        const {productId} = req.params
+        let {pageNo} = req.query // productId ve pageNo alınır
+        pageNo = parseInt(pageNo)
+        const limit = 5
+        const skipPage = limit * (pageNo - 1)  // Pagination hesaplanır
+    
+        try {
+            let getRating = await reviewModel.aggregate([{ // Aggregation ile rating'lerin kaç kere verildiği sayılır
+                $match: { // match: sadece verilen ürünün ve rating dizisi boş olmayan yorumları alır.
+                    productId: {
+                        $eq : new ObjectId(productId)
+                    },
+                    rating: {
+                        $not: {
+                            $size: 0
+                        }
+                    }
+                }
+            },
+            {
+                $unwind: "$rating" // unwind: birden fazla rating varsa (örneğin: [4, 5]), her birini ayrı belge yapar.
+            },
+            {
+                $group: { // group: aynı rating değerlerini gruplayıp, kaç tane olduklarını sayar.
+                    _id: "$rating",
+                    count: {
+                        $sum: 1
+                    }
+                }
+            } 
+            ])
+            let rating_review = [{
+                rating: 5,
+                sum : 0
+            },
+            {
+                rating: 4,
+                sum: 0
+            },
+            {
+                rating: 3,
+                sum: 0
+            },
+            {
+                rating: 2,
+                sum: 0
+            },
+            {
+                rating: 1,
+                sum: 0
+            }
+            ]
+            for (let i = 0; i < rating_review.length; i++) { // Tüm 1–5 arası puanlar normalize edilir
+                    for (let j = 0; j < getRating.length; j++) {
+                        if (rating_review[i].rating === getRating[j]._id) {
+                            rating_review[i].sum = getRating[j].count
+                            break
+                        } 
+                    }  
+            }
+        
+            const getAll = await reviewModel.find({ // getAll.length: Toplam yorum sayısı
+                productId
+            })
+            const reviews = await reviewModel.find({ // Veritabanından yorumlar çekilir (sayfalı ve toplam)
+                productId
+            }).skip(skipPage).limit(limit).sort({createdAt: -1})
+            
+            responseReturn(res, 200, { // JSON olarak döndürülür
+                reviews,
+                totalReview: getAll.length,
+                rating_review
+            })
+                
+            } catch (error) {
+                console.log(error.message)
+            }
+    }
 
 }
  
