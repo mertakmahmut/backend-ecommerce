@@ -1,6 +1,8 @@
 const sellerModel = require('../../models/sellerModel')
 const customerModel = require('../../models/customerModel')
 const sellerCustomerModel = require('../../models/chat/sellerCustomerModel')
+const { responseReturn } = require("../../utils/response")
+const sellerCustomerMessage = require('../../models/chat/sellerCustomerMessage')
 
 class chatController {
     add_customer_friend = async(req, res) => {
@@ -73,11 +75,54 @@ class chatController {
                 )
                 }
 
+                const messages = await sellerCustomerMessage.find({
+                    $or: [
+                        {
+                            $and: [{
+                                receiverId: {$eq: sellerId}
+                            },{
+                                senderId: {
+                                    $eq: userId
+                                }
+                            }]
+                        },
+                        {
+                            $and: [{
+                                receiverId: {$eq: userId}
+                            },{
+                                senderId: {
+                                    $eq: sellerId
+                                }
+                            }]
+                        }
+                    ]
+               })
+               const MyFriends = await sellerCustomerModel.findOne({
+                   myId: userId
+               })
+               const currentFd = MyFriends.myFriends.find(s => s.fdId === sellerId)
+               responseReturn(res,200, {
+                MyFriends: MyFriends.myFriends,
+                currentFd,
+                messages
+               })
+
+            } else {
+                const MyFriends = await sellerCustomerModel.findOne({
+                    myId: userId
+                })
+                responseReturn(res,200, {
+                    MyFriends: MyFriends.myFriends
+                   })
             }
 
         } catch (error) {
             console.log(error)
         }
+    }
+
+    customer_message_add = async(req, res) => {
+        console.log(req.body)
     }
 }
 
