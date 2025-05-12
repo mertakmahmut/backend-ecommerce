@@ -70,5 +70,12 @@ class customerAuthController {
         }
     }
 
+    customer_logout = async(req, res) => {
+        res.cookie('customerToken', "", {
+            expires : new Date(Date.now())
+        })
+        responseReturn(res, 200, {message : "Başarıyla Çıkış Yapıldı"})
+    }
+
 }
 module.exports = new customerAuthController()
