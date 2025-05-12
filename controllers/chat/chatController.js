@@ -281,6 +281,17 @@ class chatController {
         }
     }
 
+    get_sellers = async (req, res) => {
+        try {
+            const sellers = await sellerModel.find({})
+            responseReturn(res, 200, {
+                sellers
+            })
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
 }
 
 module.exports = new chatController()
