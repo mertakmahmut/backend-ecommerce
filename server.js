@@ -24,6 +24,8 @@ const io = socket(server, {
 
 var allCustomer = []
 var allSeller = []
+var admin = {}
+
 const addUser = ({customerId, socketId, userInfo}) => {
     const checkUser = allCustomer.some(u => u.customerId == customerId)
     if(!checkUser) {
@@ -83,6 +85,14 @@ io.on('connection', (soc) => {
         if (seller !== undefined) {
             soc.to(seller.socketId).emit('customer_message', msg)
         }
+    })
+
+    soc.on('add_admin', (adminInfo) => {
+        delete adminInfo.email
+        delete adminInfo.password
+        admin = adminInfo
+        admin.socketId = soc.id
+        io.emit('activeSeller', allSeller)
     })
 
     soc.on('disconnect', () => {
