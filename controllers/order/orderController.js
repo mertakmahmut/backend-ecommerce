@@ -167,6 +167,85 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
         }
     }
 
+    get_admin_orders = async(req, res) => {
+        let {page,searchValue,parPage} = req.query
+        page = parseInt(page)
+        parPage= parseInt(parPage)
+    
+        const skipPage = parPage * (page - 1)
+    
+        try {
+            if (searchValue) {
+                
+            } else {
+                const orders = await customerOrderModel.aggregate([
+                    {
+                        $lookup: {
+                            from: 'authororders',
+                            localField: "_id",
+                            foreignField: 'orderId',
+                            as: 'suborder'
+                        }
+                    }
+                ]).skip(skipPage).limit(parPage).sort({ createdAt: -1})
+    
+                const totalOrder = await customerOrderModel.aggregate([
+                    {
+                        $lookup: {
+                            from: 'authororders',
+                            localField: "_id",
+                            foreignField: 'orderId',
+                            as: 'suborder'
+                        }
+                    }
+                ])
+    
+                responseReturn(res,200, { orders, totalOrder: totalOrder.length })
+            }
+        } catch (error) {
+            console.log(error.message)
+        } 
+    
+    }
+
+    get_admin_order = async (req, res) => {
+    const { orderId } = req.params
+    try {
+        const order = await customerOrderModel.aggregate([
+            {
+                $match: {_id: new ObjectId(orderId)}
+            },
+            {
+                $lookup: {
+                    from: 'authororders',
+                    localField: "_id",
+                    foreignField: 'orderId',
+                    as: 'suborder'
+                }
+            }
+        ])
+        responseReturn(res,200, { order: order[0] })
+    } catch (error) {
+        console.log('get admin order details' + error.message)
+    }
+    }
+
+    admin_order_status_update = async(req, res) => {
+        const { orderId } = req.params
+        const { status } = req.body
+    
+        try {
+            await customerOrderModel.findByIdAndUpdate(orderId, {
+                delivery_status : status
+            })
+            responseReturn(res,200, {message: 'Sipariş Durumu Başarıyla Değiştirildi'})
+        } catch (error) {
+            console.log('get admin status error' + error.message)
+            responseReturn(res,500, {message: 'internal server error'})
+        }
+         
+    }
+
 }
 
 module.exports = new orderController()
