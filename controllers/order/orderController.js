@@ -273,6 +273,32 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
         }
     }
 
+    get_seller_order = async (req,res) => {
+        const { orderId } = req.params
+        console.log(orderId)
+        try {
+            const order = await authOrderModel.findById(orderId)
+            responseReturn(res, 200, { order })
+        } catch (error) {
+            console.log('get seller details error' + error.message)
+        }
+    }
+
+    seller_order_status_update = async(req,res) => {
+        const {orderId} = req.params
+        const { status } = req.body
+    
+        try {
+            await authOrderModel.findByIdAndUpdate(orderId,{
+                delivery_status: status
+            })
+            responseReturn(res,200, {message: 'Sipariş Durumu Başarıyla Güncellendi'})
+        } catch (error) {
+            console.log('get seller Order error' + error.message)
+            responseReturn(res,500, {message: 'internal server error'})
+        }
+      }
+
 }
 
 module.exports = new orderController()
