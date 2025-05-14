@@ -4,6 +4,8 @@ const customerOrderModel = require('../../models/customerOrderModel')
 const cartModel = require('../../models/cartModel')
 const { responseReturn } = require('../../utils/response')
 const { mongo: {ObjectId}} = require('mongoose')
+const stripe = require('stripe')('sk_test_51ROa83PGnGtg4tWmBZekmSAZGDan1ZbCWLiXUJYCdDj1ONsSKjPvmnEamZqEI7Nhn00dhDIBHR0AMLpBw2447K1Z00AXtuo4fH')
+
 
 class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda tutman veri yönetimini kolaylaştırır.
 
@@ -297,7 +299,28 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
             console.log('get seller Order error' + error.message)
             responseReturn(res,500, {message: 'internal server error'})
         }
-      }
+    }
+
+    create_payment = async (req, res) => {
+    const { price } = req.body
+    try {
+        const payment = await stripe.paymentIntents.create({
+            amount: price * 100,
+            currency: 'usd',
+            automatic_payment_methods: {
+                enabled: true
+            }
+        })
+        responseReturn(res, 200, { clientSecret: payment.client_secret })
+    } catch (error) {
+        console.log(error.message)
+    }
+    }
+
+    order_confirm = async (req,res) => {
+        const {orderId} = req.params
+        console.log(orderId)
+    }
 
 }
 
