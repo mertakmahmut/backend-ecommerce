@@ -2,6 +2,8 @@ const moment = require("moment")
 const authOrderModel = require('../../models/authOrderModel')
 const customerOrderModel = require('../../models/customerOrderModel')
 const cartModel = require('../../models/cartModel')
+const myShopWallet = require('../../models/myShopWallet')
+const sellerWallet = require('../../models/sellerWallet')
 const { responseReturn } = require('../../utils/response')
 const { mongo: {ObjectId}} = require('mongoose')
 const stripe = require('stripe')('sk_test_51ROa83PGnGtg4tWmBZekmSAZGDan1ZbCWLiXUJYCdDj1ONsSKjPvmnEamZqEI7Nhn00dhDIBHR0AMLpBw2447K1Z00AXtuo4fH')
@@ -93,7 +95,7 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
 
             setTimeout(() => { // 15 saniye sonra ödeme durumu kontrol edilir.
                 this.paymentCheck(order.id)
-            }, 15000)
+            }, 180000)
 
             responseReturn(res, 200, {message : "Order Placed Successfully", orderId : order.id})
 
@@ -319,7 +321,38 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
 
     order_confirm = async (req,res) => {
         const {orderId} = req.params
-        console.log(orderId)
+        try {
+            await customerOrderModel.findByIdAndUpdate(orderId, { payment_status: 'paid' })
+            await authOrderModel.updateMany({ orderId: new ObjectId(orderId)},{
+                payment_status: 'paid', delivery_status: 'pending'  
+            })
+            const cuOrder = await customerOrderModel.findById(orderId)
+
+            const auOrder = await authOrderModel.find({
+                orderId: new ObjectId(orderId)
+            })
+
+            const time = moment(Date.now()).format('l')
+            const splitTime = time.split('/')
+
+            await myShopWallet.create({
+                amount : cuOrder.price,
+                month : splitTime[0],
+                year : splitTime[2] // month/day/year
+            })
+
+            for (let i = 0; i < auOrder.length; i++) {
+             await sellerWallet.create({
+                sellerId: auOrder[i].sellerId.toString(),
+                amount: auOrder[i].price,
+                month: splitTime[0],
+                year: splitTime[2]
+             }) 
+            }
+
+        } catch (error) {
+            console.log(error.message)
+        }
     }
 
 }

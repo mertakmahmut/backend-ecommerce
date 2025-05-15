@@ -1,5 +1,7 @@
 const stripeModel = require('../../models/stripeModel')
 const sellerModel = require('../../models/sellerModel')
+const sellerWallet = require('../../models/sellerWallet')
+const withdrawRequest = require('../../models/withdrawRequest')
 const {v4: uuidv4} = require('uuid')
 const {responseReturn} = require('../../utils/response')
 const stripe = require('stripe')('sk_test_51ROa83PGnGtg4tWmBZekmSAZGDan1ZbCWLiXUJYCdDj1ONsSKjPvmnEamZqEI7Nhn00dhDIBHR0AMLpBw2447K1Z00AXtuo4fH')
@@ -69,6 +71,96 @@ class paymentController {
             }
         } catch (error) {
             responseReturn(res, 500, {message : 'Internal Server Error'})
+        }
+    }
+
+    sumAmount = (data) => {
+        let sum = 0;
+        for (let i = 0; i < data.length; i++) {
+            sum = sum + data[i].amount;            
+        }
+        return sum
+    }
+
+    get_seller_payment_details = async (req, res) => {
+    const {sellerId} = req.params
+    
+    try {
+        const payments = await sellerWallet.find({ sellerId }) 
+
+        const pendingWithdraws = await withdrawRequest.find({
+            $and: [
+                {
+                    sellerId: {
+                        $eq: sellerId
+                    }
+                },
+                {
+                    status: {
+                        $eq: 'pending'
+                    }
+                }
+            ]
+        })
+
+        const successWithdraws = await withdrawRequest.find({
+            $and: [
+                {
+                    sellerId: {
+                        $eq: sellerId
+                    }
+                },
+                {
+                    status: {
+                        $eq: 'success'
+                    }
+                }
+            ]
+        })
+
+        const pendingAmount = this.sumAmount(pendingWithdraws)
+        const withdrawAmount = this.sumAmount(successWithdraws)
+        const totalAmount = this.sumAmount(payments)
+
+        let availableAmount = 0;
+
+        if (totalAmount > 0) {
+            availableAmount = totalAmount - (pendingAmount + withdrawAmount)
+        }
+
+        responseReturn(res, 200,{
+            totalAmount,
+            pendingAmount,
+            withdrawAmount,
+            availableAmount,
+            pendingWithdraws,
+            successWithdraws 
+        })
+        
+    } catch (error) {
+        console.log(error.message)
+    } 
+     
+    }
+
+    withdrawal_request = async(req, res) => {
+        const {sellerId, amount} = req.body
+        try {
+            const withdrawal = withdrawRequest.create({
+                sellerId,
+                amount : parseInt(amount)
+            })
+
+            responseReturn(res, 200, {
+                withdrawal,
+                message : 'Para Çekme Talebi Gönderildi'
+            })
+
+
+        } catch (error) {
+            responseReturn(res, 500, {
+                message : 'Internal Server Error'
+            })
         }
     }
 }
