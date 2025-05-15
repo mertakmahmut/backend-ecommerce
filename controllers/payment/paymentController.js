@@ -163,6 +163,21 @@ class paymentController {
             })
         }
     }
+
+    get_payment_request = async(req, res) => {
+        try {
+            const withdrawalRequest = await withdrawRequest.find({
+                status : 'pending'
+            })
+
+            responseReturn(res, 200, {withdrawalRequest})
+
+        } catch (error) {
+            responseReturn(res, 500, {
+                message : 'Internal Server Error'
+            })
+        }
+    }
 }
 
 module.exports = new paymentController()
