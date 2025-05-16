@@ -4,6 +4,7 @@ const sellerWallet = require('../../models/sellerWallet')
 const withdrawRequest = require('../../models/withdrawRequest')
 const {v4: uuidv4} = require('uuid')
 const {responseReturn} = require('../../utils/response')
+const { mongo: {ObjectId}} = require('mongoose')
 const stripe = require('stripe')('sk_test_51ROa83PGnGtg4tWmBZekmSAZGDan1ZbCWLiXUJYCdDj1ONsSKjPvmnEamZqEI7Nhn00dhDIBHR0AMLpBw2447K1Z00AXtuo4fH')
 
 class paymentController {
@@ -176,6 +177,29 @@ class paymentController {
             responseReturn(res, 500, {
                 message : 'Internal Server Error'
             })
+        }
+    }
+
+    payment_request_confirm = async(req, res) => {
+        const {paymentId} = req.body
+        console.log(paymentId)
+        try {
+            const payment = await withdrawRequest.findById(paymentId)
+            const {stripeId} = await stripeModel.findOne({
+                sellerId: new ObjectId(payment.sellerId)
+            })
+
+            await stripe.transfers.create({
+                amount: payment.amount * 100,
+                currency: 'usd',
+                destination: stripeId
+            })
+             
+            await withdrawRequest.findByIdAndUpdate(paymentId, {status: 'success'})
+            responseReturn(res, 200, {payment, message: 'Para Çekme Talebi Onaylandı'})
+        } catch (error) {
+            console.log(error)
+            responseReturn(res, 500,{ message: 'Internal Server Error'})
         }
     }
 }
