@@ -49,7 +49,7 @@ class productController {
                     brand : brand.trim()
                 })
 
-                responseReturn(res, 201,{ message : 'Product Added Successfully'})
+                responseReturn(res, 201,{ message : 'Ürün başarıyla eklendi'})
 
             } catch (error) {
                 responseReturn(res, 500,{ error : error.message})
@@ -112,7 +112,7 @@ class productController {
                 name, description, stock, price, discount, category, brand, productId, slug
             })
             const product = await productModel.findById(productId)
-            responseReturn(res, 200,{product, message : 'Product Updated Successfully'})
+            responseReturn(res, 200,{product, message : 'Ürün başarıyla güncellendi'})
         } catch (error) {
             responseReturn(res, 500,{error : error.message})
         }

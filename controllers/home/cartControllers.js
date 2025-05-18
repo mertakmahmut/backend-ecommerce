@@ -23,14 +23,14 @@ class cartControllers {
             })
 
             if (product) {
-                responseReturn(res, 404, {error : "Product Already Added to Cart"})
+                responseReturn(res, 404, {error : "Ürün sepete zaten eklenmiş"})
             } else {
                 const product = await cartModel.create({
                     userId,
                     productId,
                     quantity
                 })
-                responseReturn(res, 201, {message : "Added to Cart Successfully", product})
+                responseReturn(res, 201, {message : "Sepete başarıyla eklendi", product})
             }
 
         } catch (error) {
@@ -134,7 +134,7 @@ class cartControllers {
         // console.log(cartId)
         try {
             await cartModel.findByIdAndDelete(cartId)
-            responseReturn(res, 200, {message : "Product Removed Successfully"})
+            responseReturn(res, 200, {message : "Ürün başarıyla silindi"})
             
         } catch (error) {
             console.log(error.message)   
@@ -173,12 +173,12 @@ class cartControllers {
             const product = await wishlistModel.findOne({slug})
             if(product) {
                 responseReturn(res, 404 ,{
-                    error: 'Product Is Already In Wishlist'
+                    error: 'Ürün zaten istek listesinde'
                 })
             } else {
                 await wishlistModel.create(req.body)
                 responseReturn(res, 201 ,{
-                    message: 'Product Added to Wishlist Successfully'
+                    message: 'Ürün başarıyla istek listesine eklendi'
                 })
             }
         } catch (error) {
@@ -206,7 +206,7 @@ class cartControllers {
         try {
             const wishlist = await wishlistModel.findByIdAndDelete(wishlistId)
             responseReturn(res, 200,{
-                message: 'Wishlist Product Remove',
+                message: 'Ürün istek listesinden silindi',
                 wishlistId
          })
         } catch (error) {

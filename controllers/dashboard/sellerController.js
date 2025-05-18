@@ -40,7 +40,7 @@ class sellerController{
         try {
             await sellerModel.findByIdAndUpdate(sellerId, {status}) // burada frontend'den gelen status güncellenmiş oluyor.
             const seller = await sellerModel.findById(sellerId)
-            responseReturn(res, 200,{seller, message : 'Seller Status Updated Successfully'})
+            responseReturn(res, 200,{seller, message : 'Kullanıcı durumu başarıyla güncellendi'})
         } catch (error) {
             responseReturn(res, 500,{error : error.message})
         }

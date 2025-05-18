@@ -81,7 +81,7 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
                     products : storePro,
                     price : pri,
                     payment_status : 'unpaid',
-                    shippingInfo : 'QuickCart Warehouse',
+                    shippingInfo : 'Genel Merkez',
                     delivery_status : 'pending',
                     date : tempDate
                 })
@@ -97,7 +97,7 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
                 this.paymentCheck(order.id)
             }, 180000)
 
-            responseReturn(res, 200, {message : "Order Placed Successfully", orderId : order.id})
+            responseReturn(res, 200, {message : "Sipariş başarıyla gerçekleştirildi", orderId : order.id})
 
         } catch (error) {
             console.log(error.message)
@@ -242,7 +242,7 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
             await customerOrderModel.findByIdAndUpdate(orderId, {
                 delivery_status : status
             })
-            responseReturn(res,200, {message: 'Sipariş Durumu Başarıyla Değiştirildi'})
+            responseReturn(res,200, {message: 'Sipariş durumu başarıyla değiştirildi'})
         } catch (error) {
             console.log('get admin status error' + error.message)
             responseReturn(res,500, {message: 'internal server error'})
@@ -296,7 +296,7 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
             await authOrderModel.findByIdAndUpdate(orderId,{
                 delivery_status: status
             })
-            responseReturn(res,200, {message: 'Sipariş Durumu Başarıyla Güncellendi'})
+            responseReturn(res,200, {message: 'Sipariş durumu başarıyla güncellendi'})
         } catch (error) {
             console.log('get seller Order error' + error.message)
             responseReturn(res,500, {message: 'internal server error'})

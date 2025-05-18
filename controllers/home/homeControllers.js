@@ -192,7 +192,7 @@ class homeControllers{
                 rating : productRating // Ortalama rating bulunduktan sonra ürün tablosuna gidip değeri güncellememiz gerekir.
             })
             responseReturn(res, 201, {
-                message: "Değerlendirmeniz Başarıyla Eklendi"
+                message: "Değerlendirmeniz başarıyla eklendi"
             })
         } catch (error) {
             console.log(error.message)

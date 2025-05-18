@@ -12,7 +12,7 @@ class customerAuthController {
         try {
             const customer = await customerModel.findOne({email})
             if (customer) {
-                responseReturn(res, 404, {error : 'Email Already Exists'})
+                responseReturn(res, 404, {error : 'E-posta mevcut'})
             } else {
                 const createCustomer = await customerModel.create({
                     name : name.trim(),
@@ -32,7 +32,7 @@ class customerAuthController {
                 res.cookie('customerToken', token, {
                     expires : new Date(Date.now() + 7*24*60*60*1000)
                 })
-                responseReturn(res, 201, { message : "User Register Success", token})
+                responseReturn(res, 201, { message : "Kullanıcı başarıyla kaydoldu", token})
             }
         } catch (error) {
             console.log(error.message)
@@ -58,12 +58,12 @@ class customerAuthController {
                     res.cookie('customerToken', token, {
                         expires : new Date(Date.now() + 7*24*60*60*1000)
                     })
-                    responseReturn(res, 200, {token, message : "User Login Success"})
+                    responseReturn(res, 200, {token, message : "Başarıyla giriş yapıldı"})
                 } else {
-                    responseReturn(res, 404, {error : "Password Wrong"})
+                    responseReturn(res, 404, {error : "Parola yanlış"})
                 } 
             } else {
-                responseReturn(res, 404, {error : 'no such user found'})
+                responseReturn(res, 404, {error : 'Böyle bir kullanıcı bulunamadı'})
             }
         } catch (error) {
             console.log(error.message)
@@ -74,7 +74,7 @@ class customerAuthController {
         res.cookie('customerToken', "", {
             expires : new Date(Date.now())
         })
-        responseReturn(res, 200, {message : "Başarıyla Çıkış Yapıldı"})
+        responseReturn(res, 200, {message : "Çıkış yapıldı"})
     }
 
 }

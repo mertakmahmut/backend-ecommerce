@@ -66,7 +66,7 @@ class paymentController {
                 await sellerModel.findById(id, {
                     payment : 'active'
                 })
-                responseReturn(res, 200, {message : 'Ödeme Aktif'})
+                responseReturn(res, 200, {message : 'Ödeme aktif'})
             } else {
                 responseReturn(res, 404, {message : 'Ödeme Aktif Başarısız oldu'})
             }
@@ -154,7 +154,7 @@ class paymentController {
 
             responseReturn(res, 200, {
                 withdrawal,
-                message : 'Para Çekme Talebi Gönderildi'
+                message : 'Para çekme talebi gönderildi'
             })
 
 
@@ -196,7 +196,7 @@ class paymentController {
             })
              
             await withdrawRequest.findByIdAndUpdate(paymentId, {status: 'success'})
-            responseReturn(res, 200, {payment, message: 'Para Çekme Talebi Onaylandı'})
+            responseReturn(res, 200, {payment, message: 'Para çekme talebi onaylandı'})
         } catch (error) {
             console.log(error)
             responseReturn(res, 500,{ message: 'Internal Server Error'})

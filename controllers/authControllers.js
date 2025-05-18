@@ -24,12 +24,12 @@ class authControllers{
                     res.cookie('accessToken', token, {
                         expires : new Date(Date.now() + 7*24*60*60*1000)
                     })
-                    responseReturn(res, 200, {token, message : "Login Success"})
+                    responseReturn(res, 200, {token, message : "Başarılı giriş"})
                 } else {
-                    responseReturn(res, 404, {error : "Password Wrong"})
+                    responseReturn(res, 404, {error : "Şifre yanlış"})
                 }
             } else {
-                responseReturn(res, 404, {error : "Email not Found"})
+                responseReturn(res, 404, {error : "E-posta bulunamadı"})
             }
         } catch (error) {
             responseReturn(res, 500, {error : error.message})
@@ -42,7 +42,7 @@ class authControllers{
         try {
             const getUser = await sellerModel.findOne({email})
             if (getUser) {
-                responseReturn(res, 404, {error : 'Email Already Exist'})
+                responseReturn(res, 404, {error : 'E-posta zaten mevcut'})
                 //console.log(getUser)
             }
             else{
@@ -62,7 +62,7 @@ class authControllers{
                     expires : new Date(Date.now() + 7*24*60*60*1000)
                 })
 
-                responseReturn(res, 201, {token, message : 'Register Success'})
+                responseReturn(res, 201, {token, message : 'Başarılı kayıt'})
             }
         } catch (error) {
             responseReturn(res, 500, {error : 'Internal Server Error'})
@@ -85,12 +85,12 @@ class authControllers{
                     res.cookie('accessToken', token, {
                         expires : new Date(Date.now() + 7*24*60*60*1000)
                     })
-                    responseReturn(res, 200, {token, message : "Login Success"})
+                    responseReturn(res, 200, {token, message : "Login Başarılı giriş"})
                 } else {
-                    responseReturn(res, 404, {error : "Password Wrong"})
+                    responseReturn(res, 404, {error : "Şifre yanlış"})
                 }
             } else {
-                responseReturn(res, 404, {error : "Email not Found"})
+                responseReturn(res, 404, {error : "E-posta bulunamadı"})
             }
         } catch (error) {
             responseReturn(res, 500, {error : error.message})
@@ -135,7 +135,7 @@ class authControllers{
                         image : result.url
                     })
                     const userInfo = await sellerModel.findById(id)
-                    responseReturn(res, 201, { message : 'Profile Image Uploaded Successfully', userInfo})
+                    responseReturn(res, 201, { message : 'Profil resmi başarıyla yüklendi', userInfo})
                 } else {
                     responseReturn(res, 404,{error : 'Image Upload Failed'})
                 }
@@ -161,7 +161,7 @@ class authControllers{
                 }
             })
             const userInfo = await sellerModel.findById(id)
-            responseReturn(res, 201, { message : 'Profile Info Added Successfully', userInfo})
+            responseReturn(res, 201, { message : 'Profil bilgisi başarıyla eklendi', userInfo})
         } catch (error) {
             responseReturn(res, 500,{error : error.message})
         }
@@ -173,7 +173,7 @@ class authControllers{
                 expires : new Date(Date.now()),
                 httpOnly: true
             })
-            responseReturn(res, 200,{ message : 'logout Success' })
+            responseReturn(res, 200,{ message : 'sistemden çıkış yapıldı' })
         } catch (error) {
             responseReturn(res, 500,{ error : error.message })
         }

@@ -9,7 +9,7 @@ class categoryController{
         const form = formidable()
         form.parse(req, async(err,fields,files)=>{
             if (err) {
-                responseReturn(res, 404,{ error : 'something went wrong'})
+                responseReturn(res, 404,{ error : 'bir şeyler ters gitti'})
             } else {
                 let {name} = fields
                 let {image} = files
@@ -33,10 +33,10 @@ class categoryController{
                         slug,
                         image: result.url
                     })
-                    responseReturn(res, 201,{ category,message : 'Category Added Successfully'})
+                    responseReturn(res, 201,{ category,message : 'Kategori başarıyla eklendi'})
                     
                 } else {
-                    responseReturn(res, 404,{ error : 'Image Upload File'})
+                    responseReturn(res, 404,{ error : 'Resim Yükleme Dosyası'})
                 }
                 
                } catch (error) {
@@ -99,7 +99,7 @@ class categoryController{
         const form = formidable()
         form.parse(req, async(err,fields,files)=>{
             if (err) {
-                responseReturn(res, 404,{ error : 'something went wrong'})
+                responseReturn(res, 404,{ error : 'bir şeyler ters gitti'})
             } else {
                 let {name} = fields
                 let {image} = files
@@ -131,7 +131,7 @@ class categoryController{
                     }
                     
                     const category = await categoryModel.findByIdAndUpdate(id,updateData, { new: true});
-                    responseReturn(res, 200, {category, message: 'Kategori Başarıyla Güncellendi'})
+                    responseReturn(res, 200, {category, message: 'Kategori başarıyla güncellendi'})
                         
                 } catch (error) {
                     responseReturn(res, 500,{ error : 'Internal Server Error'})
