@@ -31,7 +31,7 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
     }
 
     place_order = async(req, res) => {
-        // console.log(req.body)
+        console.log(req.body)
         const { price, products, shipping_fee, items, shippingInfo, userId } = req.body // Frontend'den gelen veri alınır
         let authorOrderData = [] // Satıcılara özel siparişler bu dizide toplanır.
         let cartId = [] // Sipariş sonrası silinecek sepet ürünlerinin ID’leri.
@@ -81,7 +81,7 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
                     products : storePro,
                     price : pri,
                     payment_status : 'unpaid',
-                    shippingInfo : 'Genel Merkez',
+                    shippingInfo : shippingInfo,
                     delivery_status : 'pending',
                     date : tempDate
                 })
