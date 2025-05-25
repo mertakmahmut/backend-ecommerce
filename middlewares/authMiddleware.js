@@ -4,7 +4,7 @@ module.exports.authMiddleware = async(req, res, next) => {
     const {accessToken} = req.cookies
 
     if (!accessToken) {
-        return res.status(409).json({error : 'Please Login First'})
+        return res.status(409).json({error : 'Lütfen giriş yapın'})
     } else {
         try {
             const deCodeToken = await jwt.verify(accessToken, process.env.SECRET)
@@ -12,7 +12,7 @@ module.exports.authMiddleware = async(req, res, next) => {
             req.id = deCodeToken.id
             next()
         } catch (error) {
-            return res.status(409).json({error : 'Please Login'})
+            return res.status(409).json({error : 'Lütfen giriş yapın'})
         }
     }
 }
