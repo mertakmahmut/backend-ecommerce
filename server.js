@@ -130,6 +130,7 @@ app.use('/api', require('./routes/order/orderRoutes'))
 app.use('/api', require('./routes/chatRoutes'))
 app.use('/api', require('./routes/paymentRoutes'))
 app.use('/api',require('./routes/dashboard/dashboardRoutes'))
+app.use('/api',require('./routes/dashboard/bankAccountRoutes'))
 
 app.get('/', (req,res) => res.send('My backend'))
 const port = process.env.PORT
