@@ -355,6 +355,44 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
         }
     }
 
+    eft_confirm_payment = async (req, res) => {
+        const { orderId } = req.params;
+        try {
+            await customerOrderModel.findByIdAndUpdate(orderId, { payment_status: 'paid' });
+            await authOrderModel.updateMany({ orderId }, {
+            payment_status: 'paid',
+            delivery_status: 'pending'
+            });
+
+            const cuOrder = await customerOrderModel.findById(orderId);
+            const auOrders = await authOrderModel.find({ orderId });
+
+            const time = moment(Date.now()).format('l');
+            const [month, , year] = time.split('/');
+
+            await myShopWallet.create({
+                amount: cuOrder.price,
+                month,
+                year
+            });
+
+            for (let i = 0; i < auOrders.length; i++) {
+                await sellerWallet.create({
+                    sellerId: auOrders[i].sellerId.toString(),
+                    amount: auOrders[i].price,
+                    month,
+                    year
+                });
+            }
+
+            responseReturn(res, 200, {message : "Havale/EFT ödemesi başarıyla kaydedildi."})
+
+        } catch (error) {
+            console.error(error.message);
+            responseReturn(res, 500, {message : "Bir hata oluştu."})
+        }
+    }
+
 }
 
 module.exports = new orderController()
