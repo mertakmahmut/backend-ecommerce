@@ -32,7 +32,7 @@ class customerAuthController {
                 res.cookie('customerToken', token, {
                     expires : new Date(Date.now() + 7*24*60*60*1000)
                 })
-                responseReturn(res, 201, { message : "Kullanıcı başarıyla kaydoldu", token})
+                responseReturn(res, 201, { message : "Başarıyla Kayıt Olundu", token})
             }
         } catch (error) {
             console.log(error.message)
@@ -75,6 +75,25 @@ class customerAuthController {
             expires : new Date(Date.now())
         })
         responseReturn(res, 200, {message : "Çıkış yapıldı"})
+    }
+
+    change_password_user = async(req, res) => {
+        const {email, old_password, new_password} = req.body
+        
+        try {
+            const user = await customerModel.findOne({email}).select('+password')
+            if(!user) return res.status(404).json({message : 'Kullanıcı bulunamadı'})
+
+            const isMatch = await bcrypt.compare(old_password, user.password)
+            if(!isMatch) return res.status(400).json({message : 'Hatalı eski şifre'})
+
+            user.password = await bcrypt.hash(new_password, 10)
+            await user.save()
+            res.json({message : 'Şifreniz başarıyla değiştirildi'})
+
+        } catch (error) {
+            res.status(500).json({message : 'Server error'})
+        }
     }
 
 }

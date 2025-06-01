@@ -148,7 +148,7 @@ class cartControllers {
             const product = await cartModel.findById(cartId)
             const {quantity} = product
             await cartModel.findByIdAndUpdate(cartId, {quantity : quantity + 1})
-            responseReturn(res, 200, {message : "Quantity Updated"})
+            responseReturn(res, 200, {message : "Miktar Artırıldı"})
         } catch (error) {
             console.log(error.message)
         }
@@ -161,7 +161,7 @@ class cartControllers {
             const product = await cartModel.findById(cartId)
             const {quantity} = product
             await cartModel.findByIdAndUpdate(cartId, {quantity : quantity - 1})
-            responseReturn(res, 200, {message : "Quantity Updated"})
+            responseReturn(res, 200, {message : "Miktar Azaltıldı"})
         } catch (error) {
             console.log(error.message)
         }

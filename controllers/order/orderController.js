@@ -93,7 +93,7 @@ class orderController { // Hem müşteri hem satıcı siparişini ayrı tabloda 
                 await cartModel.findByIdAndDelete(cartId[k])
             }
 
-            setTimeout(() => { // 15 saniye sonra ödeme durumu kontrol edilir.
+            setTimeout(() => { // 15 dakika sonra ödeme durumu kontrol edilir.
                 this.paymentCheck(order.id)
             }, 180000)
 

@@ -11,6 +11,5 @@ router.post('/profile-image-upload', authMiddleware, authControllers.profile_ima
 router.post('/profile-info-add', authMiddleware, authControllers.profile_info_add)
 router.post('/change-password', authMiddleware, authControllers.change_password)
 router.get('/logout',authMiddleware, authControllers.logout)
-router.post('/customer/change-password',authMiddleware, authControllers.change_password_user)
 
 module.exports = router
