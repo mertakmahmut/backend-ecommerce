@@ -185,15 +185,15 @@ class paymentController {
         console.log(paymentId)
         try {
             const payment = await withdrawRequest.findById(paymentId)
-            const {stripeId} = await stripeModel.findOne({
-                sellerId: new ObjectId(payment.sellerId)
-            })
+            // const {stripeId} = await stripeModel.findOne({
+            //     sellerId: new ObjectId(payment.sellerId)
+            // })
 
-            await stripe.transfers.create({
-                amount: payment.amount * 100,
-                currency: 'usd',
-                destination: stripeId
-            })
+            // await stripe.transfers.create({
+            //     amount: payment.amount * 100,
+            //     currency: 'usd',
+            //     destination: stripeId
+            // })
              
             await withdrawRequest.findByIdAndUpdate(paymentId, {status: 'success'})
             responseReturn(res, 200, {payment, message: 'Para çekme talebi onaylandı'})
